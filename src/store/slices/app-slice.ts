@@ -1,36 +1,61 @@
 import { ethers } from "ethers";
-import { getAddresses } from "../../constants";
+import { getAddresses, Networks } from "../../constants";
 import { StakingContract, SartixTokenContract, ArtixTokenContract } from "../../abi";
 import { setAll } from "../../helpers";
 import { createSlice, createSelector, createAsyncThunk } from "@reduxjs/toolkit";
-import { JsonRpcProvider } from "@ethersproject/providers";
+import { JsonRpcProvider, StaticJsonRpcProvider } from "@ethersproject/providers";
 import { getMarketPrice, getTokenPrice } from "../../helpers";
 import { RootState } from "../store";
 import allBonds from "../../helpers/bond";
 
+
+
+interface IGetBalancesDashboard {
+    address: string;
+    networkID: Networks;
+    provider: StaticJsonRpcProvider | JsonRpcProvider;
+}
+
+export const getBalancesDashboard = createAsyncThunk("app/getBalancesDashboard", async ({ address, networkID, provider }: IGetBalancesDashboard): Promise<IAccountBalancesDashboard> => {
+    const addresses = getAddresses(networkID);
+
+    const artixContract = new ethers.Contract(addresses.ARTIX_ADDRESS, ArtixTokenContract, provider);
+    const sartixContract = new ethers.Contract(addresses.SARTIX_ADDRESS, SartixTokenContract, provider);
+    const circsupply = (await sartixContract.circulatingSupply()) / Math.pow(10, 9);
+    const totalsupply = (await artixContract.totalSupply()) / Math.pow(10, 9);
+    
+
+    return {
+        circsupply,
+        totalsupply,
+    };
+});
+
+
 interface ILoadAppDetails {
-    networkID: number;
-    provider: JsonRpcProvider;
+    networkID: Networks;
+    provider: StaticJsonRpcProvider | JsonRpcProvider;
 }
 
 export const loadAppDetails = createAsyncThunk(
     "app/loadAppDetails",
     //@ts-ignore
     async ({ networkID, provider }: ILoadAppDetails) => {
-        const mimPrice = getTokenPrice("TEST");
+        const signer = provider.getSigner();
+
+        const mimPrice = getTokenPrice("MIM");
         const addresses = getAddresses(networkID);
 
-        const stakingContract = new ethers.Contract(addresses.STAKING_ADDRESS, StakingContract, provider);
+        const stakingContract = new ethers.Contract(addresses.STAKING_ADDRESS, StakingContract, signer);
         const currentBlock = await provider.getBlockNumber();
         const currentBlockTime = (await provider.getBlock(currentBlock)).timestamp;
-        const sartixContract = new ethers.Contract(addresses.SARTIX_ADDRESS, SartixTokenContract, provider);
-        const artixContract = new ethers.Contract(addresses.ARTIX_ADDRESS, ArtixTokenContract, provider);
+        const sartixContract = new ethers.Contract(addresses.SARTIX_ADDRESS, SartixTokenContract, signer);
+        const artixContract = new ethers.Contract(addresses.ARTIX_ADDRESS, ArtixTokenContract, signer);
 
-        const marketPrice = ((await getMarketPrice(networkID, provider)) / Math.pow(10, 9)) * mimPrice;
+        const marketPrice = ((await getMarketPrice(networkID, signer)) / Math.pow(10, 9)) * mimPrice;
 
         const totalSupply = (await artixContract.totalSupply()) / Math.pow(10, 9);
         const circSupply = (await sartixContract.circulatingSupply()) / Math.pow(10, 9);
-
         const stakingTVL = circSupply * marketPrice;
         const marketCap = totalSupply * marketPrice;
 
@@ -92,6 +117,7 @@ export interface IAppSlice {
     marketPrice: number;
     marketCap: number;
     circSupply: number;
+    circsupply: number;
     currentIndex: string;
     currentBlock: number;
     currentBlockTime: number;
@@ -102,6 +128,7 @@ export interface IAppSlice {
     networkID: number;
     nextRebase: number;
     totalSupply: number;
+    totalsupply: number;
     rfv: number;
     runway: number;
 }
@@ -124,6 +151,17 @@ const appSlice = createSlice({
                 state.loading = false;
             })
             .addCase(loadAppDetails.rejected, (state, { error }) => {
+                state.loading = false;
+                console.log(error);
+            })
+            .addCase(getBalancesDashboard.pending, state => {
+                state.loading = true;
+            })
+            .addCase(getBalancesDashboard.fulfilled, (state, action) => {
+                setAll(state, action.payload);
+                state.loading = false;
+            })
+            .addCase(getBalancesDashboard.rejected, (state, { error }) => {
                 state.loading = false;
                 console.log(error);
             });

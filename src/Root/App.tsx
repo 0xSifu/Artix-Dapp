@@ -3,7 +3,7 @@ import { Route, Redirect, Switch } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useAddress, useWeb3Context } from "../hooks";
 import { calcBondDetails } from "../store/slices/bond-slice";
-import { loadAppDetails } from "../store/slices/app-slice";
+import { loadAppDetails, getBalancesDashboard } from "../store/slices/app-slice";
 import { loadAccountDetails, calculateUserTokenDetails, calculateUserBondDetails } from "../store/slices/account-slice";
 import { IReduxState } from "../store/slices/state.interface";
 import Loading from "../components/Loader";
@@ -33,6 +33,7 @@ function App() {
 
         if (whichDetails === "app") {
             loadApp(loadProvider);
+            loadBalanceDashboard(loadProvider);
         }
 
         if (whichDetails === "account" && address && connected) {
@@ -40,6 +41,7 @@ function App() {
             if (isAppLoaded) return;
 
             loadApp(loadProvider);
+            loadBalanceDashboard(loadProvider);
         }
 
         if (whichDetails === "userBonds" && address && connected) {
@@ -54,6 +56,7 @@ function App() {
             });
         }
     }
+    
 
     const loadApp = useCallback(
         loadProvider => {
@@ -64,6 +67,13 @@ function App() {
             tokens.map(token => {
                 dispatch(calculateUserTokenDetails({ address: "", token, provider, networkID: chainID }));
             });
+        },
+        [connected],
+    );
+
+    const loadBalanceDashboard = useCallback(
+        loadProvider => {
+            dispatch(getBalancesDashboard({ networkID: chainID, address, provider: loadProvider }));
         },
         [connected],
     );

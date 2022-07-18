@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import { useSelector } from "react-redux";
 import { Grid, Zoom } from "@material-ui/core";
 import { trim } from "../../helpers";
@@ -11,6 +12,8 @@ function Dashboard() {
     const app = useSelector<IReduxState, IAppSlice>(state => state.app);
 
     const trimmedStakingAPY = trim(app.stakingAPY * 100, 1);
+
+    console.log('TEST :'+JSON.stringify(app));
 
     return (
         <div className="dashboard-view">
@@ -52,12 +55,12 @@ function Dashboard() {
                                         `${new Intl.NumberFormat("en-US", {
                                             maximumFractionDigits: 0,
                                             minimumFractionDigits: 0,
-                                        }).format(app.circSupply)}
+                                        }).format(app.circsupply)}
                                         /
                                         ${new Intl.NumberFormat("en-US", {
                                             maximumFractionDigits: 0,
                                             minimumFractionDigits: 0,
-                                        }).format(app.totalSupply)}`
+                                        }).format(app.totalsupply)}`
                                     )}
                                 </p>
                             </div>
