@@ -51,7 +51,13 @@ function ViewBase({ children }: IViewBaseProps) {
     };
 
     return (
-        <div className="view-base-root">
+        <div className="view-base-root"
+				style={{
+					// background: `url(data:image/svg+xml;base64,${cowSwapBackground}) no-repeat 100% / cover fixed`,
+					// backgroundColor: 'darkmagenta',
+					backgroundAttachment: 'fixed'
+				}}
+				>
             <Messages />
             <Header drawe={!isSmallerScreen} handleDrawerToggle={handleDrawerToggle} />
             <div className={classes.drawer}>
@@ -62,8 +68,10 @@ function ViewBase({ children }: IViewBaseProps) {
                     <Drawer />
                 </Hidden>
             </div>
-            <div className={`${classes.content} ${isSmallerScreen && classes.contentShift}`}>
-                {!isSmallerScreen && (
+            <div 
+              className={`${classes.content} ${isSmallerScreen && classes.contentShift}`}
+            >
+                {/* {!isSmallerScreen && (
                     <div className="cubes-top">
                         <p>{cubesImage}</p>
                     </div>
@@ -72,7 +80,7 @@ function ViewBase({ children }: IViewBaseProps) {
                     <div className="cubes-bottom">
                         <p>{cubesImage}</p>
                     </div>
-                )}
+                )} */}
                 {children}
             </div>
         </div>

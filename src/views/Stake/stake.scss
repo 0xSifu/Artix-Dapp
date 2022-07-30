@@ -14,7 +14,9 @@
   
     /* slightly transparent fallback for Firefox (not supporting backdrop-filter) */
     @supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
-      background: #181B1C;
+      // background: #181B1C;
+      background: rgba(72, 80, 85, 0.1);
+      backdrop-filter: blur(70px);
     }
 
     border-radius: 10px;

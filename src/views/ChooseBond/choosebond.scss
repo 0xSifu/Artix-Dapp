@@ -24,7 +24,9 @@
   
     /* slightly transparent fallback for Firefox (not supporting backdrop-filter) */
     @supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
-      background: #181B1C;
+      // background: #181B1C;
+      background: rgba(36, 39, 41, 0.1);
+      backdrop-filter: blur(70px);
     }
 
     .choose-bond-view-card-header{

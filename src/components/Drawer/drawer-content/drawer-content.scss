@@ -1,8 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap');
 .dapp-sidebar {
   height: 100vh;
   min-width: 280px;
   display: flex;
   flex-direction: column;
+
+  .artix-text {
+    margin-top: 1rem;
+    letter-spacing: 6px;
+    font-family: 'Rubik Glitch', cursive;
+    color: #FFFFFF;
+    font-size: 20px;
+  }
 
   .branding-header {
     display: flex;
@@ -26,6 +35,7 @@
   .dapp-menu-links{
     display: flex;
     align-items: center;
+    padding-left: 3rem;
 
     .dapp-nav {
       display: flex;
@@ -155,7 +165,9 @@
   
     /* slightly transparent fallback for Firefox (not supporting backdrop-filter) */
     @supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
-      background: #181B1C;
+      // background: #181B1C;
+      background: rgba(36, 39, 41, 0.1);
+      backdrop-filter: blur(70px);
     }
   }
 }

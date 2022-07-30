@@ -46,6 +46,7 @@ function NavContent() {
                 <Link href="https://wonderland.money" target="_blank">
                     <img alt="" src={WonderlandIcon} />
                 </Link>
+                <p className="artix-text">Artix</p>
 
                 {address && (
                     <div className="wallet-link">
